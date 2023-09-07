@@ -1,0 +1,12 @@
+body {
+  margin: 0!important;
+  padding: 0!important;
+  overflow: hidden;
+}
+.stats {
+  width: 100px;
+  canvas {
+    width: 160px !important;
+    height: 96px !important;
+  }
+}
