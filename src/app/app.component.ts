@@ -35,14 +35,16 @@ export class AppComponent implements OnInit {
       HSegments: 8
     }
 
+    const el_radius = 60;
+
     const levels_electrons = [
-      {radius: 60, electrons: 2},
-      {radius: 90, electrons: 8},
-      {radius: 120, electrons: 18},
-      {radius: 150, electrons: 32},
-      {radius: 180, electrons: 21},
-      {radius: 210, electrons: 9},
-      {radius: 240, electrons: 2},
+      {radius: el_radius, electrons: 2},
+      {radius: el_radius * 2, electrons: 8},
+      {radius: el_radius * 3, electrons: 18},
+      {radius: el_radius * 4, electrons: 32},
+      {radius: el_radius * 5, electrons: 21},
+      {radius: el_radius * 6, electrons: 9},
+      {radius: el_radius * 7, electrons: 2},
     ]
 
     function getRandomArbitrary(radius: number) {
@@ -79,16 +81,23 @@ export class AppComponent implements OnInit {
     scene.background = new THREE.Color(0x000000);
 
     const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(0, 0, 1); //default; light shining from top
+    light.position.set(1, 0, 0); //default; light shining from top
     light.castShadow = true; // default false
     scene.add(light);
 
     let camera = new THREE.PerspectiveCamera(
       70, window.innerWidth / window.innerHeight, 0.1, 10000
     );
-    camera.position.z = 155;
-    camera.position.y = 0;
+    camera.position.z = 0;
+    camera.position.x = 0;
+    camera.position.y = 300;
+
+
     scene.add(camera);
+
+    // The X axis is red. The Y axis is green. The Z axis is blue.
+    const axesHelper = new THREE.AxesHelper( 500 );
+    scene.add( axesHelper );
 
     const controls = new ArcballControls(camera, renderer.domElement, scene);
     controls.addEventListener('change', function () {
@@ -99,7 +108,7 @@ export class AppComponent implements OnInit {
     function createElectrons(radius: number, electrons: number) {
       for (let i = 0; i < electrons; i++) {
         const electron = new THREE.Mesh(
-          new THREE.SphereGeometry(4, 4, 4),
+          new THREE.SphereGeometry(8, 8, 8),
           new THREE.MeshStandardMaterial({
             color: 0xffffff,
           })
@@ -107,11 +116,18 @@ export class AppComponent implements OnInit {
 
         let speed = getRandomInt(0.001, 0.0001);
 
-        let add_rand_z = getRandomInt(-80, 80);
+        // dev
+        // let speed = 0.001;
+
+        let add_rotate = getRandomInt(0, 0);
+
+        let rotate_z = getRandomInt(0, 100);
 
         let orbit_angle = Math.random() < 0.5;
+        let direction = 1
+
         if (!orbit_angle) {
-          add_rand_z = add_rand_z * -1;
+          direction = direction * -1;
         }
 
 
@@ -119,10 +135,19 @@ export class AppComponent implements OnInit {
           requestAnimationFrame(anim);
           const angle = performance.now() * speed;
 
-          electron.position.x = radius * Math.cos(angle) - add_rand_z;
-          electron.position.y = radius * Math.sin(angle);
-          electron.position.z = minusPercent((radius * Math.cos(angle)), 10)  + (add_rand_z * 2);
+          electron.position.x = (radius * Math.cos(angle + add_rotate)) * direction;
+          electron.position.z = (minusPercent((radius * Math.cos(angle)), rotate_z));
+          electron.position.y = (radius * Math.sin(angle + add_rotate)) * direction;
+
         })()
+
+        // setInterval(() => {
+        //   console.group()
+        //   console.log(electron.position.x)
+        //   console.log(electron.position.y)
+        //   console.log(electron.position.z)
+        //   console.groupEnd()
+        // }, 1000)
 
         scene.add(electron)
       }
