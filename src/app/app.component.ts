@@ -90,7 +90,7 @@ export class AppComponent implements OnInit {
     );
     camera.position.z = 0;
     camera.position.x = 0;
-    camera.position.y = 300;
+    camera.position.y = 600;
 
 
     scene.add(camera);
@@ -119,16 +119,16 @@ export class AppComponent implements OnInit {
         // dev
         // let speed = 0.001;
 
-        let add_rotate = getRandomInt(0, 0);
+        let add_rotate = getRandomInt(-2, 2);
 
         let rotate_z = getRandomInt(0, 100);
 
         let orbit_angle = Math.random() < 0.5;
-        let direction = 1
+        let direction = 1;
 
-        if (!orbit_angle) {
-          direction = direction * -1;
-        }
+        // if (!orbit_angle) {
+        //   direction = direction * -1;
+        // }
 
 
         (function anim() {
@@ -136,7 +136,7 @@ export class AppComponent implements OnInit {
           const angle = performance.now() * speed;
 
           electron.position.x = (radius * Math.cos(angle + add_rotate)) * direction;
-          electron.position.z = (minusPercent((radius * Math.cos(angle)), rotate_z));
+          electron.position.z = (minusPercent((radius * Math.cos(angle - add_rotate)), rotate_z));
           electron.position.y = (radius * Math.sin(angle + add_rotate)) * direction;
 
         })()
@@ -234,7 +234,7 @@ export class AppComponent implements OnInit {
     setInterval(() => {
       renderer.render(scene, camera);
       stats.update();
-    }, 15)
+    }, 1)
   }
 
 }
