@@ -107,21 +107,21 @@ export class AppComponent implements OnInit {
 
         let speed = getRandomInt(0.001, 0.0001);
 
-        // const random_boolean = Math.random() < 0.5;
-        // if (random_boolean) {
-        //   speed = speed * -1;
-        // }
+        let add_rand_z = getRandomInt(-80, 80);
 
-        let add_rand_z = getRandomInt(0.1, 1);
+        let orbit_angle = Math.random() < 0.5;
+        if (!orbit_angle) {
+          add_rand_z = add_rand_z * -1;
+        }
+
 
         (function anim() {
           requestAnimationFrame(anim);
           const angle = performance.now() * speed;
 
-          electron.position.x = radius * Math.cos(angle);
+          electron.position.x = radius * Math.cos(angle) - add_rand_z;
           electron.position.y = radius * Math.sin(angle);
-          // electron.position.z = radius * (Math.cos(angle) * Math.sin(angle)) + add_rand_z;
-          electron.position.z = minusPercent((electron.position.y + electron.position.x), 70);
+          electron.position.z = minusPercent((radius * Math.cos(angle)), 10)  + (add_rand_z * 2);
         })()
 
         scene.add(electron)
