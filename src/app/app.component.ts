@@ -2,7 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import * as THREE from 'three';
 import {ArcballControls} from "three/examples/jsm/controls/ArcballControls";
 import Stats from 'three/examples/jsm/libs/stats.module';
-import { GUI } from 'dat.gui'
+import {GUI} from 'dat.gui'
+import {func} from "three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements";
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -15,11 +17,11 @@ export class AppComponent implements OnInit {
 
   createThreeJsBox(): void {
     let kernelOpt = {
-      kernelRadius: 40
+      kernelRadius: 25
     }
-
-    let protons = 73;
-    let neitrons = 73;
+    //
+    let protons = 92;
+    let neitrons = 92;
 
     const assets_protons = {
       color: 0x0096FF,
@@ -60,11 +62,13 @@ export class AppComponent implements OnInit {
 
       return {x, y, z};
     }
+
     function getRandomInt(min: number, max: number) {
       return Math.random() * (max - min) + min;
     }
+
     function minusPercent(number: number, percent: number) {
-      return number - (number * (percent/100));
+      return number - (number * (percent / 100));
     }
 
     let renderer = new THREE.WebGLRenderer({
@@ -89,15 +93,13 @@ export class AppComponent implements OnInit {
       70, window.innerWidth / window.innerHeight, 0.1, 10000
     );
     camera.position.z = 0;
-    camera.position.x = 0;
-    camera.position.y = 600;
-
-
+    camera.position.x = 200;
+    camera.position.y = 0;
     scene.add(camera);
 
     // The X axis is red. The Y axis is green. The Z axis is blue.
-    const axesHelper = new THREE.AxesHelper( 500 );
-    scene.add( axesHelper );
+    const axesHelper = new THREE.AxesHelper(500);
+    scene.add(axesHelper);
 
     const controls = new ArcballControls(camera, renderer.domElement, scene);
     controls.addEventListener('change', function () {
@@ -121,17 +123,18 @@ export class AppComponent implements OnInit {
 
         let add_rotate = getRandomInt(-2, 2);
 
-        let rotate_z = getRandomInt(0, 100);
+        let rotate_z = getRandomInt(0, 50);
 
         let orbit_angle = Math.random() < 0.5;
         let direction = 1;
 
-        // if (!orbit_angle) {
-        //   direction = direction * -1;
-        // }
+        if (!orbit_angle) {
+          direction = direction * -1;
+        }
 
 
         (function anim() {
+
           requestAnimationFrame(anim);
           const angle = performance.now() * speed;
 
@@ -165,17 +168,16 @@ export class AppComponent implements OnInit {
             color: assets_neitrons.color,
           })
         )
+        const u = Math.random();
+        const v = Math.random();
+        const theta = 2 * Math.PI * u;
+        const phi = Math.acos(2 * v - 1);
 
-        let x = getRandomArbitrary(kernelOpt.kernelRadius).x
-        let y = getRandomArbitrary(kernelOpt.kernelRadius).y
-        let z = getRandomArbitrary(kernelOpt.kernelRadius).z
+        const x = kernelOpt.kernelRadius * Math.sin(phi) * Math.cos(theta);
+        const y = kernelOpt.kernelRadius * Math.sin(phi) * Math.sin(theta);
+        const z = kernelOpt.kernelRadius * Math.cos(phi);
 
-        neitron.castShadow = true;
-        neitron.receiveShadow = false;
-
-        neitron.position.x = x
-        neitron.position.y = y
-        neitron.position.z = z
+        neitron.position.set(x, y, z);
 
         scene.add(neitron)
       }
@@ -186,20 +188,20 @@ export class AppComponent implements OnInit {
           new THREE.MeshStandardMaterial({
             color: assets_protons.color,
           })
-        )
+        );
 
-        let x = getRandomArbitrary(kernelOpt.kernelRadius).x
-        let y = getRandomArbitrary(kernelOpt.kernelRadius).y
-        let z = getRandomArbitrary(kernelOpt.kernelRadius).z
+        const u = Math.random();
+        const v = Math.random();
+        const theta = 2 * Math.PI * u;
+        const phi = Math.acos(2 * v - 1);
 
-        proton.castShadow = true;
-        proton.receiveShadow = false;
+        const x = kernelOpt.kernelRadius * Math.sin(phi) * Math.cos(theta);
+        const y = kernelOpt.kernelRadius * Math.sin(phi) * Math.sin(theta);
+        const z = kernelOpt.kernelRadius * Math.cos(phi);
 
-        proton.position.x = x
-        proton.position.y = y
-        proton.position.z = z
+        proton.position.set(x, y, z);
 
-        scene.add(proton)
+        scene.add(proton);
       }
     })()
 
@@ -216,11 +218,11 @@ export class AppComponent implements OnInit {
     }
 
     const stats = createStats();
-    document.body.appendChild( stats.dom );
+    document.body.appendChild(stats.dom);
 
     const gui = new GUI()
     const kernelOptions = gui.addFolder('kernel')
-    kernelOptions.add(kernelOpt, 'kernelRadius',1, 300)
+    // kernelOptions.add(kernelOpt, 'kernelRadius',1, 300)
     kernelOptions.open()
 
     const cameraFolder = gui.addFolder('Camera')
